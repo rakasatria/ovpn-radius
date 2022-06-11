@@ -20,7 +20,7 @@ var config Config
 
 //code 1
 func init() {
-	jsonFile, err := os.Open("config.json")
+	jsonFile, err := os.Open("/etc/openvpn/plugin/config.json")
 	if err != nil {
 		log.Errorf("init: failed with %s\n", err)
 		os.Exit(10)
@@ -227,7 +227,7 @@ func accountingRequest(requestType string, repository *SQLiteRepository, session
 	case "update":
 		accountingCommand = "Class=" + userClient.ClassName + ",Acct-Session-Id=" + strconv.Itoa(sessionId) + ",Acct-Status-Type=Interim-Update,User-Name=" + userClient.CommonName + ",Calling-Station-Id=" + config.ServerInfo.IpAddress + ",NAS-Identifier=" + config.ServerInfo.Identifier + ",Framed-IP-Address=" + userIpAddress
 	case "stop":
-		accountingCommand = "Acct-Status-Type=Stop,User-Name=" + userClient.CommonName + ",Calling-Station-Id=" + config.ServerInfo.IpAddress + ",NAS-Identifier=" + config.ServerInfo.Identifier + ",Acct-Unique-Session-Id=" + userClient.CommonName + ",Acct-Terminate-Cause=User-Request,Acct-Session-Time=" + os.Getenv("time_duration") + ",Acct-Output-Octets=" + os.Getenv("bytes_sent") + ",Acct-Input-Octets=" + os.Getenv("bytes_received")
+		accountingCommand = "Class=" + userClient.ClassName + ",Acct-Session-Id=" + strconv.Itoa(sessionId) + ",Acct-Status-Type=Stop,User-Name=" + userClient.CommonName + ",Calling-Station-Id=" + config.ServerInfo.IpAddress + ",NAS-Identifier=" + config.ServerInfo.Identifier + ",Framed-IP-Address=" + userIpAddress + ",Acct-Terminate-Cause=User-Request"
 	default:
 		log.Errorf("accountingRequest: '" + requestType + "' request type is unknown.")
 		os.Exit(61)
