@@ -1,0 +1,24 @@
+{
+    "LogFile": "/home/rsatria/radius/ovpn-radius/radius-plugin.log",
+    "ServerInfo":
+    {
+      "Identifier": "OpenVPN",
+      "IpAddress": "10.10.10.123",
+      "PortType": "5",
+      "ServiceType": "5"
+    },
+    "Radius":
+    {
+      "Authentication":
+      {
+        "Server": "10.10.10.124:1812",
+        "Secret": "s3cr3t"
+      },
+      "Accounting":
+      {
+        "Server": "10.10.10.124:1813",
+        "Secret": "s3cr3t"
+      }
+    }
+}
+  
