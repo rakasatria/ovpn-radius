@@ -19,13 +19,14 @@ git clone https://github.com/rakasatria/ovpn-radius
 
 # Build the project
 cd ovpn-radius/src 
-go mod tidy 
+go mod tidy # if needed
 go build
 
 # Create plugin folder and copy binary file
 mkdir -p /etc/openvpn/plugin
 cp config.json /etc/openvpn/plugin
 cp ovpn-radius /etc/openvpn/plugin
+chmod 755 /etc/openvpn/plugin/ovpn-radius
 
 # Create database folder sqlite
 mkdir -p /etc/openvpn/plugin/db
