@@ -12,7 +12,7 @@ Currently tested on Ubuntu 20.04 and 22.04
 
 ```bash
 # Install prerequisites
-apt install golang, git, freeradius-utils, sqlite3
+apt install golang git freeradius-utils sqlite3
 
 # Clone repository
 git clone https://github.com/rakasatria/ovpn-radius
