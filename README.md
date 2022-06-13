@@ -73,7 +73,7 @@ port 1194
 proto udp
 dev tun
 auth-user-pass-verify "/etc/openvpn/plugin/ovpn-radius auth " via-file # authenticate to radius
-client-connect "/etc/openvpn/plugin/ovpn-radius start " # sent acounting request start and update to radius
+client-connect "/etc/openvpn/plugin/ovpn-radius acct " # sent acounting request start and update to radius
 client-disconnect "/etc/openvpn/plugin/ovpn-radius stop " # sent acounting request stop to radius
 ca easy-rsa/pki/ca.crt
 cert easy-rsa/pki/issued/server.crt
