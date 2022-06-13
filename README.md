@@ -18,7 +18,9 @@ apt install golang git freeradius-utils sqlite3
 git clone https://github.com/rakasatria/ovpn-radius
 
 # Build the project
-cd ovpn-radius/src && go build
+cd ovpn-radius/src 
+go mod tidy 
+go build
 
 # Create plugin folder and copy binary file
 mkdir -p /etc/openvpn/plugin
