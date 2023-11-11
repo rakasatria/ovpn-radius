@@ -180,9 +180,9 @@ func authenticateUser(repository *SQLiteRepository) {
 				log.Errorf("authenticate: failed to save account data with error %s\n", errCreate)
 				os.Exit(37)
 			}
-		}
 
-		log.Info("authenticate: user '" + username + "' with class '" + className + "' data is saved.")
+			log.Info("authenticate: user '" + username + "' with class '" + className + "' data is saved.")
+		}
 
 		os.Exit(0)
 	}
