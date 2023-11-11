@@ -166,17 +166,20 @@ func authenticateUser(repository *SQLiteRepository) {
 
 		log.Info("authenticate: user '" + username + "' with class '" + className + "' is authenticated sucessfully")
 
-		newClient := OVPNClient{
-			Id:         os.Getenv("untrusted_ip") + ":" + os.Getenv("untrusted_port"),
-			CommonName: username,
-			ClassName:  className,
-		}
+		// If AuthenticationOnly is enabled no need to update DB
+		if !config.Radius.AuthenticationOnly {
+			newClient := OVPNClient{
+				Id:         os.Getenv("untrusted_ip") + ":" + os.Getenv("untrusted_port"),
+				CommonName: username,
+				ClassName:  className,
+			}
 
-		_, errCreate := repository.Create(newClient)
+			_, errCreate := repository.Create(newClient)
 
-		if errCreate != nil {
-			log.Errorf("authenticate: failed to save account data with error %s\n", errCreate)
-			os.Exit(37)
+			if errCreate != nil {
+				log.Errorf("authenticate: failed to save account data with error %s\n", errCreate)
+				os.Exit(37)
+			}
 		}
 
 		log.Info("authenticate: user '" + username + "' with class '" + className + "' data is saved.")

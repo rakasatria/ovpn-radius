@@ -14,8 +14,9 @@ type ConfigServerInfo struct {
 }
 
 type ConfigRadius struct {
-	Authentication ConfigServer `json:"Authentication"`
-	Accounting     ConfigServer `json:"Accounting"`
+	AuthenticationOnly	bool		 `json:"AuthenticationOnly"`
+	Authentication 		ConfigServer `json:"Authentication"`
+	Accounting     		ConfigServer `json:"Accounting"`
 }
 
 type ConfigServer struct {
