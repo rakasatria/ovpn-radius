@@ -9,6 +9,7 @@
     },
     "Radius":
     {
+      "AuthenticationOnly": false,
       "Authentication":
       {
         "Server": "10.10.10.124:1812",

@@ -111,7 +111,7 @@ func authenticateUser(repository *SQLiteRepository) {
 		os.Exit(33)
 	} else {
 		log.Info("authenticate: trying to authenticate to " + config.Radius.Authentication.Server)
-		authenticationData := "Response-Packet-Type=Access-Accept,NAS-Identifier=" + config.ServerInfo.Identifier + ",NAS-Port-Type=" + config.ServerInfo.PortType + ",NAS-IP-Address=" + config.ServerInfo.IpAddress + ",Service-Type=" + config.ServerInfo.ServiceType + ",Framed-Protocol=1,User-Name=" + username + ",User-Password=" + password + ",Framed-Protocol=PPP,Message-Authenticator=0x00"
+		authenticationData := "Response-Packet-Type=Access-Accept,NAS-Identifier=" + config.ServerInfo.Identifier + ",NAS-Port-Type=" + config.ServerInfo.PortType + ",NAS-IP-Address=" + config.ServerInfo.IpAddress + ",Service-Type=" + config.ServerInfo.ServiceType + ",Framed-Protocol=1,User-Name=" + username + ",User-Password='" + password + "',Framed-Protocol=PPP,Message-Authenticator=0x00"
 
 		radClientPath := "/usr/bin/radclient"
 
@@ -166,20 +166,23 @@ func authenticateUser(repository *SQLiteRepository) {
 
 		log.Info("authenticate: user '" + username + "' with class '" + className + "' is authenticated sucessfully")
 
-		newClient := OVPNClient{
-			Id:         os.Getenv("untrusted_ip") + ":" + os.Getenv("untrusted_port"),
-			CommonName: username,
-			ClassName:  className,
+		// If AuthenticationOnly is enabled no need to update DB
+		if !config.Radius.AuthenticationOnly {
+			newClient := OVPNClient{
+				Id:         os.Getenv("untrusted_ip") + ":" + os.Getenv("untrusted_port"),
+				CommonName: username,
+				ClassName:  className,
+			}
+
+			_, errCreate := repository.Create(newClient)
+
+			if errCreate != nil {
+				log.Errorf("authenticate: failed to save account data with error %s\n", errCreate)
+				os.Exit(37)
+			}
+
+			log.Info("authenticate: user '" + username + "' with class '" + className + "' data is saved.")
 		}
-
-		_, errCreate := repository.Create(newClient)
-
-		if errCreate != nil {
-			log.Errorf("authenticate: failed to save account data with error %s\n", errCreate)
-			os.Exit(37)
-		}
-
-		log.Info("authenticate: user '" + username + "' with class '" + className + "' data is saved.")
 
 		os.Exit(0)
 	}
