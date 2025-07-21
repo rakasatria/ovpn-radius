@@ -229,7 +229,7 @@ func isValidUTF8FromHex(hexaString string) bool {
 func accountingRequest(requestType string, repository *SQLiteRepository, sessionId int) {
 	log.Info("accountingRequest: prepare send request to " + config.Radius.Accounting.Server + " with request type: " + requestType)
 	var accountingCommand string
-	userId := os.Getenv("trusted_ip") + ":" + os.Getenv("trusted_port")
+	userId := os.Getenv("untrusted_ip") + ":" + os.Getenv("untrusted_port")
 	userIpAddress := os.Getenv("ifconfig_pool_remote_ip")
 
 	log.Info("accountingRequest: get user data with Id " + userId)
