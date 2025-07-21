@@ -86,7 +86,7 @@ func authenticateUser(repository *SQLiteRepository) {
 	}
 
 	authFilePath := string(os.Args[2])
-	log.Info("authenticate: Autentication using filepath: " + authFilePath)
+	log.Info("authenticate: Authentication using filepath: " + authFilePath)
 
 	authFile, authErr := os.Open(authFilePath)
 	if authErr != nil {
@@ -166,22 +166,46 @@ func authenticateUser(repository *SQLiteRepository) {
 
 		log.Info("authenticate: user '" + username + "' with class '" + className + "' is authenticated sucessfully")
 
+		// Check for empty class attribute and provide helpful message
+		if len(className) == 0 {
+			log.Warn("authenticate: Class attribute is empty. Please ensure 'insert_acct_class' is enabled in FreeRadius configuration.")
+		}
+
 		// If AuthenticationOnly is enabled no need to update DB
 		if !config.Radius.AuthenticationOnly {
+			clientId := os.Getenv("untrusted_ip") + ":" + os.Getenv("untrusted_port")
 			newClient := OVPNClient{
-				Id:         os.Getenv("untrusted_ip") + ":" + os.Getenv("untrusted_port"),
+				Id:         clientId,
 				CommonName: username,
 				ClassName:  className,
 			}
 
-			_, errCreate := repository.Create(newClient)
-
-			if errCreate != nil {
-				log.Errorf("authenticate: failed to save account data with error %s\n", errCreate)
+			// Check if record already exists (handles TLS renegotiation case)
+			existingClient, errGet := repository.GetById(clientId)
+			if errGet != nil && errGet != ErrNotExists {
+				log.Errorf("authenticate: failed to check existing account data with error %s\n", errGet)
 				os.Exit(37)
 			}
 
-			log.Info("authenticate: user '" + username + "' with class '" + className + "' data is saved.")
+			if existingClient != nil {
+				// Record exists - update it (TLS renegotiation scenario)
+				existingClient.CommonName = username
+				existingClient.ClassName = className
+				_, errUpdate := repository.Update(*existingClient)
+				if errUpdate != nil {
+					log.Errorf("authenticate: failed to update existing account data with error %s\n", errUpdate)
+					os.Exit(37)
+				}
+				log.Info("authenticate: updated existing user '" + username + "' with class '" + className + "' data.")
+			} else {
+				// Record doesn't exist - create new one
+				_, errCreate := repository.Create(newClient)
+				if errCreate != nil {
+					log.Errorf("authenticate: failed to save account data with error %s\n", errCreate)
+					os.Exit(37)
+				}
+				log.Info("authenticate: saved new user '" + username + "' with class '" + className + "' data.")
+			}
 		}
 
 		os.Exit(0)
